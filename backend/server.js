@@ -18,7 +18,15 @@ app.use(cookieParser());
 
 //routes
 const routeFiles = fs.readdirSync("./src/routes");
-console.log(routeFiles);
+routeFiles.forEach((file)=> {
+  //dynamic import of routes
+  import(`./src/routes/${file}`).then((route) => {
+    app.use("/api/v1", route.default);
+  })
+  .catch((error) => {
+    console.log("Failed to import route: ", error.message);
+  })
+})
 
 
 const server = async () => {
