@@ -37,8 +37,8 @@ export const registerUser = asyncHandler(async (req, res) => {
     path: "/",
     httpOnly: true,
     maxAge: 30 * 24 * 60 * 60 * 1000, //30 days
-    sameSite: "lax",
-    secure: true,
+    sameSite: "strict",
+    secure: false,
   });
 
   if (user) {
@@ -99,8 +99,8 @@ export const loginUser = asyncHandler(async (req, res) => {
       path: "/",
       httpOnly: true,
       maxAge: 30 * 24 * 60 * 60 * 1000, //30 days
-      sameSite: "lax",
-      secure: true,
+      sameSite: "strict",
+      secure: false,
     });
 
     //200: OK
@@ -116,3 +116,53 @@ export const loginUser = asyncHandler(async (req, res) => {
     });
   }
 });
+
+//logout user
+
+export const logoutUser = asyncHandler(async (req, res) => {
+  res.clearCookie("token");
+  res.status(200).json({ message: "Logged out successfully" });
+})
+
+//get user profile
+
+export const getUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select("-password");
+  if (user) {
+    res.status(200).json(user);
+  } else {
+    res.status(404).json({ message: "User not found" });
+  }
+});
+
+
+//update user profile
+
+export const updateUser = asyncHandler(async (req, res) => {
+
+  const user = await User.findById(req.user._id)
+
+  if(user){
+    const {name,bio,photo} = req.body
+
+    user.name = req.body.name || user.name
+    user.bio = req.body.bio || user.bio
+    user.photo = req.body.photo || user.photo
+
+    const updatedUser = await user.save()
+
+    res.status(200).json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      photo: updatedUser.photo,
+      bio: updatedUser.bio,
+      isVerified: updatedUser.isVerified,
+    })
+  }else{
+    res.status(404).json({message: "User not found"})
+  }
+
+
+})
