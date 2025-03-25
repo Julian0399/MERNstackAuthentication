@@ -34,5 +34,23 @@ export const adminMiddleware = asyncHandler(async (req, res, next) => {
     return
   }
     res.status(403).json({message: "Only admins can delete users"})
-  
+})
+
+// create middleware
+
+export const createMiddleware = asyncHandler(async (req, res, next) => {
+  if((req.user && req.user.role === 'creator') && (req.user && req.user.role === 'admin')){
+    next()
+    return
+  }
+  res.status(403).json({message: "Only creators can get all users"})
+})
+
+// verified middleware
+export const verifiedMiddleware = asyncHandler(async(req,res,next) => {
+  if(req.user && req.user.isverified){
+    next()
+    return
+  }
+  res.status(403).json({message: "User not verified"})
 })
