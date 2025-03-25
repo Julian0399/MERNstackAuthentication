@@ -26,3 +26,13 @@ export const protect = asyncHandler(async (req, res, next) => {
         res.status(500).json({ message: "Server error" });
       }
 })
+
+// admin middleware
+export const adminMiddleware = asyncHandler(async (req, res, next) => {
+  if(req.user && req.user.role === "admin"){
+    next()
+    return
+  }
+    res.status(403).json({message: "Only admins can delete users"})
+  
+})
