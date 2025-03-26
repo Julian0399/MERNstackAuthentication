@@ -319,3 +319,23 @@ export const resetPassword = asyncHandler(async (req, res) => {
   await user.save()
   res.status(200).json({message: "Password reset successfully"})
 });
+
+export const changePassword = asyncHandler(async (req, res) => {
+  const {currentPassword, newPassword} = req.body
+  if(!currentPassword || !newPassword){
+    return res.status(400).json({message: "Please provide all fields"})
+  }
+  const user = await User.findById(req.user._id)
+  if(!user){
+    return res.status(400).json({message: "User not found"})
+  }
+  const isMatch = await bycrypt.compare(currentPassword, user.password)
+  if(!isMatch){
+    return res.status(400).json({message: "Invalid current password"})
+  }
+  if(isMatch){
+    user.password = newPassword
+    await user.save()
+    return res.status(200).json({message: "Password changed successfully"})
+  }
+});
