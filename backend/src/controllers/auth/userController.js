@@ -292,8 +292,30 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 
   try {
     await sendEmail(subject, send_to, reply_to, template, send_from, name, link)
+    res.status(200).json({message: "Password reset email sent"})
   } catch (error) {
     console.log(error);
     return res.status(500).json({message: "Email could not be sent"})
   }
+});
+
+//reset password
+export const resetPassword = asyncHandler(async (req, res) => {
+  const {resetPasswordToken} = req.params
+  const {password} = req.body
+  if(!password){
+    return res.status(400).json({message: "Please provide password"})
+  }
+  // hash 
+  const hashedToken = await hashToken(resetPasswordToken)
+  
+  const userToken = await Token.findOne({passwordResetToken: hashedToken,expiresAt: { $gt: Date.now() }})
+  if(!userToken){
+    return res.status(400).json({message: "Invalid or expired reset password token"})
+  }
+  //find user by token
+  const user = await User.findById(userToken.userId)
+  user.password = password
+  await user.save()
+  res.status(200).json({message: "Password reset successfully"})
 });
