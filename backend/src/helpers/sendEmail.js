@@ -22,8 +22,6 @@ const sendEmail = async (subject, send_to, reply_to, template, send_from, name, 
             ciphers: "SSLv3",
         }
     })
-    console.log("USER_EMAIL:", process.env.USER_EMAIL);
-    console.log("USER_PASS:", process.env.USER_PASS);
     const handlebarsOptions = {
         viewEngine:{
             extName: ".hbs",

@@ -253,3 +253,47 @@ export const verifyUser = asyncHandler(async (req, res) => {
   await user.save()
   res.status(200).json({message: "Email verified successfully"})
 });
+
+//forgot password
+export const forgotPassword = asyncHandler(async (req, res) => {
+  const {email} = req.body
+  if(!email){
+    return res.status(400).json({message: "Please provide email"})
+  }
+  const user = await User.findOne({email})
+  if(!user){
+    return res.status(400).json({message: "User not found"})
+  }
+  let token = await Token.findOne({userId: user._id})
+
+  if(token){
+    await token.deleteOne()
+  }
+  const passwordResetToken = crypto.randomBytes(32).toString("hex") + user._id
+  //hash token
+  const hashedToken = await hashToken(passwordResetToken)
+
+  await new Token({
+    userId: user._id,
+    passwordResetToken: hashedToken,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + 60 *60 * 1000,
+  }).save()
+  //reset password link
+  const resetPasswordLink = `${process.env.CLIENT_URL}/reset-password/${passwordResetToken}`
+  //send email
+  const subject = "Password reset - React Node Auth"
+  const send_to = user.email
+  const reply_to = process.env.SMTP_USER
+  const template = "forgotPassword"
+  const send_from = process.env.USER_EMAIL
+  const name = user.name
+  const link = resetPasswordLink
+
+  try {
+    await sendEmail(subject, send_to, reply_to, template, send_from, name, link)
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({message: "Email could not be sent"})
+  }
+});
