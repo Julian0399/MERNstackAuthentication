@@ -27,7 +27,7 @@ logs/*.log
 docker-compose.override.yml
 .dockerignore
 
-# MongoDB data (si usas volúmenes locales)
+# MongoDB data 
 data/
 dump/
 
