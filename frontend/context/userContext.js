@@ -3,7 +3,6 @@ import {createContext,useEffect,useState, useContext, use} from 'react';
 import {useRouter} from 'next/navigation';
 import toast from 'react-hot-toast';
 import axios from 'axios';
-import { log } from 'console';
 
 const userContext = createContext();
 
