@@ -3,6 +3,7 @@ import {createContext,useEffect,useState, useContext, use} from 'react';
 import {useRouter} from 'next/navigation';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { log } from 'console';
 
 const userContext = createContext();
 
@@ -10,7 +11,7 @@ export const UserContextProvider = ({children}) => {
 
     const serverUrl = "http://localhost:8000";
     const router = useRouter();
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState({});
     const [userState, setUserState] = useState({
         name:"",
         email:"",
@@ -20,16 +21,15 @@ export const UserContextProvider = ({children}) => {
 
     //register user
     const registerUser = async(userData) => {
-        console.log("im here")
+
         userData.preventDefault();
         if(!userState.email.includes("@") || !userState.password || userState.password < 6){
-            toast.error("Please fill all the fields correctly, the password must be at least 6 characters long");
-            console.log("Please fill all the fields correctly, the password must be at least 6 characters long");
+            toast.error("Please fill all the fields correctly, a valid email and the password must be at least 6 characters long");
             return;
         }
+
         try {
             const res = await axios.post(`${serverUrl}/api/v1/register`,userState);
-            console.log("user registered",res.data);
             toast.success("User registered successfully");
             //clear the form
             setUserState({
@@ -45,6 +45,69 @@ export const UserContextProvider = ({children}) => {
         }
     }
 
+    // login user
+
+    const loginUser = async(userData) => {
+        userData.preventDefault();
+        console.log("user state login",userState);
+        try {
+            const res = await axios.post(`${serverUrl}/api/v1/login`,{
+                email:userState.email,
+                password:userState.password,
+            },{
+                withCredentials:true,
+            })
+
+            toast.success("User logged in successfully");
+
+            setUser({
+                name:"",
+                email:"",
+
+            })
+            router.push("/")
+        } catch (error) {
+            console.log("error logging in user",error)
+            toast.error(error.response.data.message);
+        }
+    }
+
+    const userLoginStatus = async () => {
+        let loggedInUser = false;
+        try {
+            await axios.get(`${serverUrl}/api/v1/login-status`, {
+                withCredentials: true,
+            })
+
+            loggedInUser = !!res.data
+            setLoading(false);
+
+            if (!loggedInUser) {
+                router.push("auth/login");
+            }
+        } catch (error) {
+            console.log("error getting user login status", error)
+        }
+
+        return loggedInUser;
+    }
+
+    //logout user
+
+    const logoutUser = async () => {
+        try {
+            await axios.get(`${serverUrl}/api/v1/logout`,{
+                withCredentials: true,
+            })
+            toast.success("User logged out successfully");
+
+            router.push("/auth/login");
+
+        } catch (error) {
+            console.log("error logging out user",error)
+            toast.error(error.response.data.message);
+        }
+    }
 
     const handleUserInput = (name) => (e) => {
         const value = e.target.value
@@ -54,11 +117,18 @@ export const UserContextProvider = ({children}) => {
             [name]: value,
         }))
     }
+
+    useEffect(() => {
+        userLoginStatus();
+    },[])
+
     return(
         <userContext.Provider value={{
             registerUser,
             userState,
             handleUserInput,
+            loginUser,
+            logoutUser,
         }}>
             {children}
         </userContext.Provider>

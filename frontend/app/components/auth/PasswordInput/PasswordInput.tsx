@@ -1,6 +1,12 @@
 import React from "react";
+type PropsPassword = {
+  password: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void 
+  showPassword : boolean
+  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void
+}
 
-function EmailInput({ password,onChange }: { password: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
+function EmailInput({ password,onChange,showPassword,onClick }: PropsPassword) {
   return (
     <div className="mt-4 flex flex-col">
       <label htmlFor="password" className="mb-1 text-zinc-400">
@@ -8,7 +14,7 @@ function EmailInput({ password,onChange }: { password: string, onChange: (e: Rea
       </label>
       <div className="relative w-full">
         <input
-          type="password"
+          type={showPassword ? "text" : "password"}
           id="password"
           value={password}
           onChange={onChange}
@@ -17,7 +23,13 @@ function EmailInput({ password,onChange }: { password: string, onChange: (e: Rea
           placeholder="********"
         />
         <button type="button" className="absolute inset-y-0 right-4 flex items-center top- text-zinc-400 hover:text-indigo-800">
-          <i className="fas fa-eye"></i>
+          {
+            showPassword ? (
+            <i className="fa-solid fa-eye-slash" onClick={onClick}></i>
+            ) : (
+            <i className="fa-solid fa-eye" onClick={onClick}></i>
+            )
+          }
         </button>
       </div>
     </div>

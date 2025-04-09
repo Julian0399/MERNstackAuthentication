@@ -1,6 +1,11 @@
 import React from 'react'
 
-function EmailInput({email,onChange}:{email:string , onChange: (e: React.ChangeEvent<HTMLInputElement>) => void}) {
+type PropsEmail = {
+  email: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+}
+
+function EmailInput({email,onChange}: PropsEmail) {
   return (
     <div className="mt-4 flex flex-col">
             <label htmlFor="email" className="mb-1 text-zinc-400">Email</label>
