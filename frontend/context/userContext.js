@@ -16,7 +16,7 @@ export const UserContextProvider = ({children}) => {
         email:"",
         password:"",
     });
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     //register user
     const registerUser = async(userData) => {
@@ -74,10 +74,10 @@ export const UserContextProvider = ({children}) => {
     const userLoginStatus = async () => {
         let loggedInUser = false;
         try {
-            await axios.get(`${serverUrl}/api/v1/login-status`, {
+            const res = await axios.get(`${serverUrl}/api/v1/login-status`, {
                 withCredentials: true,
             })
-
+            console.log("user login status",res.data);
             loggedInUser = !!res.data
             setLoading(false);
 
@@ -108,6 +108,53 @@ export const UserContextProvider = ({children}) => {
         }
     }
 
+    // get user data
+    const getUser = async () => {
+        setLoading(true);
+        try {
+            const res = await axios.get(`${serverUrl}/api/v1/user`, {
+                withCredentials: true,
+            })
+            setUser((prev => {
+                return {
+                    ...prev,
+                    ...res.data,
+                }
+            }));
+            setLoading(false);
+        } catch (error) {
+            console.log("error getting user data",error)
+            setLoading(false)
+            toast.error(error.response.data.message);
+        }
+    } 
+
+    const updateUser = async (e, data) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const res = await axios.patch(`${serverUrl}/api/v1/user`, data, {
+                withCredentials: true,
+
+            })
+            //update
+
+            setUser((prev) => {
+                return {
+                    ...prev,
+                    ...res.data,
+                }
+            })
+            toast.success("User updated successfully");
+            setLoading(false);
+        } catch (error) {
+            console.log("error updating user data",error)
+            setLoading(false);
+            toast.error(error.response.data.message);            
+        }
+
+    }
+
     const handleUserInput = (name) => (e) => {
         const value = e.target.value
         console.log(`Updating ${name} with value:`, e.target.value);
@@ -118,9 +165,17 @@ export const UserContextProvider = ({children}) => {
     }
 
     useEffect(() => {
-        userLoginStatus();
-    },[])
 
+        const loginStatusGetUser = async () => {
+            const isLoggedIn = await userLoginStatus();
+
+            if (isLoggedIn) {
+                getUser();
+            }
+        }
+        loginStatusGetUser();
+    },[])
+    console.log("user state",user);
     return(
         <userContext.Provider value={{
             registerUser,
@@ -128,6 +183,9 @@ export const UserContextProvider = ({children}) => {
             handleUserInput,
             loginUser,
             logoutUser,
+            userLoginStatus,
+            user,
+            updateUser,
         }}>
             {children}
         </userContext.Provider>
