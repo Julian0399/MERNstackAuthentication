@@ -64,6 +64,7 @@ export const UserContextProvider = ({children}) => {
                 email:"",
 
             })
+            await getUser();
             router.push("/")
         } catch (error) {
             console.log("error logging in user",error)
@@ -145,6 +146,7 @@ export const UserContextProvider = ({children}) => {
                     ...res.data,
                 }
             })
+
             toast.success("User updated successfully");
             setLoading(false);
         } catch (error) {
@@ -155,6 +157,38 @@ export const UserContextProvider = ({children}) => {
 
     }
 
+    const emailVerification = async () => {
+        setLoading(true)
+        try {
+            const res = await axios.post(`${serverUrl}/api/v1/verify-email`, {},{
+                withCredentials: true,
+            }
+        )
+        toast.success("Verification email sent successfully");
+        setLoading(false);
+        } catch (error) {
+            console.log("error sending verification email",error)
+            setLoading(false);
+            toast.error(error.response.data.message);
+
+        }
+    }
+
+    const verifyUser = async (token) => {
+        setLoading(true)
+        try {
+            const res = await axios.post(`${serverUrl}/api/v1/verify-user/${token}`, {}, {
+                withCredentials: true,
+            })
+            toast.success("User verified successfully");
+            setLoading(false);
+            router.push("/");
+        } catch (error) {
+            console.log("error verifying user",error)
+            toast.error(error.response.data.message);
+            setLoading(false);
+        }
+    }
     const handleUserInput = (name) => (e) => {
         const value = e.target.value
         console.log(`Updating ${name} with value:`, e.target.value);
@@ -186,6 +220,8 @@ export const UserContextProvider = ({children}) => {
             userLoginStatus,
             user,
             updateUser,
+            emailVerification,
+            verifyUser,
         }}>
             {children}
         </userContext.Provider>
