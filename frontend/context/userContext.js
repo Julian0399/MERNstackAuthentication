@@ -181,6 +181,7 @@ export const UserContextProvider = ({children}) => {
                 withCredentials: true,
             })
             toast.success("User verified successfully");
+            getUser()
             setLoading(false);
             router.push("/");
         } catch (error) {
@@ -189,6 +190,26 @@ export const UserContextProvider = ({children}) => {
             setLoading(false);
         }
     }
+
+    const forgotPassword = async (email) => {
+        setLoading(true)
+        try {
+            const res = await axios.post(`${serverUrl}/api/v1/forgot-password`, {
+                email,
+            },{
+                withCredentials: true,
+            })
+
+            toast.success("Password reset email sent successfully");
+            setLoading(false);
+
+        } catch (error) {
+            console.log("error sending password reset email",error)
+            toast.error(error.response.data.message);
+            setLoading(false);
+        }
+    }
+
     const handleUserInput = (name) => (e) => {
         const value = e.target.value
         console.log(`Updating ${name} with value:`, e.target.value);
@@ -222,6 +243,7 @@ export const UserContextProvider = ({children}) => {
             updateUser,
             emailVerification,
             verifyUser,
+            forgotPassword,
         }}>
             {children}
         </userContext.Provider>

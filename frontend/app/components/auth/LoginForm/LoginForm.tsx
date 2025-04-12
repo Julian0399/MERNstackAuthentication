@@ -28,7 +28,7 @@ function LoginForm() {
          showPassword={showPassword}
          onClick={handleShowPassword} />
         <div className='mt-4 flex justify-start'>
-            <a href="/forgot-password" className='text-indigo-800 text-sm font-bold hover:text-fuchsia-800'>Forgot Password?</a>
+            <a href="/auth/forgot-password" className='text-indigo-800 text-sm font-bold hover:text-fuchsia-800'>Forgot Password?</a>
         </div>
         <SendButtom onClick={(e) => loginUser(e)} text='Log in'/>
         <p className="mt-8 px-8 text-center text-2x2 text-sm">

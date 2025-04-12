@@ -39,9 +39,6 @@ function RegisterForm() {
             Have an account? {""}
             <a href="login" className='text-indigo-800 font-bold hover:text-fuchsia-800'>Log in</a>
         </p>
-        <div className='mt-4 flex justify-end'>
-            <a href="/forgot-password" className='text-indigo-800 text-base font-bold hover:text-fuchsia-800'>Forgot Password?</a>
-        </div>
       </div>
     </form>
   )

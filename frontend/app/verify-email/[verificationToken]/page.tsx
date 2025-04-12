@@ -28,9 +28,6 @@ function page({ params }: Props) {
             onClick={() =>verifyUser(verificationToken) }>
             Verify
           </button>
-          <button className="flex-1 px-4 py-2 text-white bg-indigo-800 rounded-md hover:bg-indigo-700">
-            Resend Email
-          </button>
         </div>
       </div>
     </div>
