@@ -13,21 +13,13 @@ services:
       - NODE_ENV=development
     env_file:
       - ./backend/.env
-    # depends_on:
-    #   - mongo
 
-#   frontend:
-#     build: ./frontend
-#     container_name: frontend_service
-#     ports:
-#       - "3000:3000"
-#     volumes:
-#       - ./frontend:/app
-#       - /app/node_modules
-#     environment:
-#       - NODE_ENV=development
-#     depends_on:
-#       - backend
-
-# volumes:
-#   mongo_data:
+  frontend:
+    image: node:18
+    container_name: frontend_service
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    command: sh -c "npm install && npm run dev"

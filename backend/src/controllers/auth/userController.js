@@ -303,13 +303,16 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 export const resetPassword = asyncHandler(async (req, res) => {
   const {resetPasswordToken} = req.params
   const {password} = req.body
+  console.log("Token en req.params:", req.params);
   if(!password){
     return res.status(400).json({message: "Please provide password"})
   }
   // hash 
   const hashedToken = await hashToken(resetPasswordToken)
+  console.log("Hashed token:", hashedToken);
   
   const userToken = await Token.findOne({passwordResetToken: hashedToken,expiresAt: { $gt: Date.now() }})
+  console.log("Tokens en DB:", await Token.find());
   if(!userToken){
     return res.status(400).json({message: "Invalid or expired reset password token"})
   }
