@@ -3,17 +3,28 @@
 import { UseUserContext } from "@/context/userContext";
 import useRedirect from "@/hooks/useUserRedirect";
 import { useState } from "react";
+import ChangePasswordForm from "./components/auth/ChangePasswordForm/ChangePasswordForm";
 
 export default function Home() {
   useRedirect("/auth/login");
-  const { logoutUser, user, handleUserInput, userState, updateUser ,emailVerification} = UseUserContext();
+  const {
+    logoutUser,
+    user,
+    handleUserInput,
+    userState,
+    updateUser,
+    emailVerification,
+    allUsers,
+    deleteUser,
+  } = UseUserContext();
   const { name, photo, isVerified, bio } = user;
-  console.log(photo)
+  console.log(photo);
   const [isOpen, setIsOpen] = useState(false);
 
   const myToggle = () => {
     setIsOpen(!isOpen);
   };
+
   return (
     <main className="py-8 mx-40">
       <header className="flex justify-between">
@@ -27,10 +38,10 @@ export default function Home() {
             className="w-12 h-12 rounded-full border-2 border-indigo-800"
           />
           {!isVerified && (
-            <button 
+            <button
               className="px-4 py-2 bg-indigo-500 text-white rounded-md"
               onClick={() => emailVerification()}
-              >
+            >
               Verify Account
             </button>
           )}
@@ -75,6 +86,37 @@ export default function Home() {
           </form>
         )}
       </section>
+      <div className="flex gap-6 mt-6">
+        <div className="flex-1">
+          <ChangePasswordForm />
+        </div>
+        <div className="flex-1">
+          {
+            <ul>
+              {allUsers.map((user: any) => (
+                user.role !== "admin" && (
+                  <li
+                  key={user._id}
+                  className="p-1 grid grid-cols-4 gap-4 border border-gray-300 items-center rounded-md mb-4"
+                >
+                  <img
+                    src={user.photo}
+                    alt={`${user.name}'s profile picture`}
+                    className="w-12 h-12 rounded-full border-2 border-indigo-800"
+                  />
+                  <p className="text-black">{user.name}</p>
+                  <p className="text-gray-500">{user.bio}</p>
+                  <button className="text-red-500" onClick={() => deleteUser(user._id)}>
+                    <i className="fas fa-trash text-red-500"></i>
+                    Delete User
+                  </button>
+                </li>
+                )
+              ))}
+            </ul>
+          }
+        </div>
+      </div>
     </main>
   );
 }

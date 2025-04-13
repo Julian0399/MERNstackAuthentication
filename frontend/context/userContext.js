@@ -6,6 +6,9 @@ import axios from "axios";
 
 const userContext = createContext();
 
+//axios credentials
+axios.defaults.withCredentials = true;
+
 export const UserContextProvider = ({ children }) => {
   const serverUrl = "http://localhost:8000";
   const router = useRouter();
@@ -16,6 +19,7 @@ export const UserContextProvider = ({ children }) => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const [allUsers, setAllUsers] = useState([]);
 
   //register user
   const registerUser = async (userData) => {
@@ -246,6 +250,57 @@ export const UserContextProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+  const changePassword = async (currentPassword,newPassword) => {
+    setLoading(true)
+    try {
+        const res = await axios.patch(`${serverUrl}/api/v1/change-password`, {
+            currentPassword,
+            newPassword,
+        },{
+            withCredentials: true,
+        })
+        toast.success("Password changed successfully");
+        setLoading(false)
+    } catch (error) {
+        console.log("error changing password", error);
+        toast.error(error.response.data.message);
+        setLoading(false)
+    }
+  }
+  //admin routes
+
+  const getAllUsers = async () => {
+    setLoading(true)
+    try {
+      const res = await axios.get(`${serverUrl}/api/v1/admin/users`,{}, {
+        withCredentials: true,
+      });
+      setAllUsers(res.data);
+      setLoading(false)
+    } catch (error) {
+      console.log("error getting all users", error);
+      toast.error(error.response.data.message);
+      setLoading(false)
+    }
+  }
+
+  const deleteUser = async (id) => {
+    setLoading(true)
+    try {
+      const res = await axios.delete(`${serverUrl}/api/v1/admin/user/${id}`, {id},{
+        withCredentials: true,
+      });
+      toast.success("User deleted successfully");
+      setLoading(false)
+      getAllUsers();
+    } catch (error) {
+      console.log("error deleting user", error);
+      toast.error(error.response.data.message);
+      setLoading(false)
+    }
+  }
+
   const handleUserInput = (name) => (e) => {
     const value = e.target.value;
     console.log(`Updating ${name} with value:`, e.target.value);
@@ -265,6 +320,13 @@ export const UserContextProvider = ({ children }) => {
     };
     loginStatusGetUser();
   }, []);
+
+  useEffect(() => {
+    if (user.role === "admin") {
+      getAllUsers();
+    }
+
+  }, [user.role]);
   console.log("user state", user);
   return (
     <userContext.Provider
@@ -281,6 +343,9 @@ export const UserContextProvider = ({ children }) => {
         verifyUser,
         forgotPassword,
         recoveryPassword,
+        changePassword,
+        allUsers,
+        deleteUser,
       }}
     >
       {children}

@@ -20,8 +20,8 @@ function page({ params }: Props) {
 
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [confimPassword, setConfirmPassword] = useState("");
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [confimPassword, setConfirmPassword] = useState("");
 
   const handleShowPassword = () => setShowPassword(!showPassword);
   const handleShowConfirmPassword = () =>
