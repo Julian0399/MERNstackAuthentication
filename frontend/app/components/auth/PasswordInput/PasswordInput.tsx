@@ -4,13 +4,14 @@ type PropsPassword = {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void 
   showPassword : boolean
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void
+  label?: string
 }
 
-function EmailInput({ password,onChange,showPassword,onClick }: PropsPassword) {
+function EmailInput({ password,onChange,showPassword,onClick,label ="Password" }: PropsPassword) {
   return (
     <div className="mt-4 flex flex-col">
       <label htmlFor="password" className="mb-1 text-zinc-400">
-        Password
+        {label}
       </label>
       <div className="relative w-full">
         <input

@@ -1,6 +1,5 @@
 "use client";
 import { UseUserContext } from "@/context/userContext";
-import { type } from "os";
 import React, { useState } from "react";
 import EmailInput from "../EmailInput/EmailInput";
 import SendButtom from "../SendButtom/SendButtom";
